@@ -8,6 +8,8 @@ var lines = File.ReadAllLines(args[0]);
 //Part1(lines);
 Part2(lines);
 
+// The key to Part2 is remembering that twone is 21 not 22, because the one
+// counts still.  That's it.
 static void Part2(string[] lines)
 {
     long total = 0;
