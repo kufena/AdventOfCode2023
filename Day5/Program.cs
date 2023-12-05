@@ -39,7 +39,7 @@ static void Part1(string[] lines)
             long source = long.Parse(spl3[1]);
             long length = long.Parse(spl3[2]);
             Range r = new Range { target = target, source = source, length = length };
-            m.ranges.Add(r);
+            m.ranges.Add(r.source, r);
             ind++;
         }
         maps.Add(m);
@@ -102,7 +102,7 @@ static void Part2(string[] lines)
             long source = long.Parse(spl3[1]);
             long length = long.Parse(spl3[2]);
             Range r = new Range { target = target, source = source, length = length };
-            m.ranges.Add(r);
+            m.ranges.Add(r.source, r);
             ind++;
         }
         maps.Add(m);
@@ -150,15 +150,56 @@ public class Map
 
     public string from { get; set; }
     public string to { get; set; }
-    public List<Range> ranges { get; set; }
-
+    public SortedList<long, Range> ranges { get; set; }
+    
     public long map(long x) 
     {
-        foreach (var range in ranges)
+        foreach ((long k, Range range) in ranges)
         {
             if (range.in_range(x)) return range.map(x);
         }
         return x; 
+    }
+
+    public long findLowestMapValue(long start, long length)
+    {
+        long end = start + length;
+        long lowest = long.MaxValue;
+        while (start < end)
+        {
+            if (ranges.First().Key < start)
+            {
+                // we don't even make it to the first range.
+                if (end < ranges.First().Key)
+                {
+                    if (start < lowest) lowest = start;
+                    start = end;
+                }
+                else
+                {
+                    start = ranges.First().Key;
+                }
+            }
+            else
+            {
+                foreach ((long k, Range r) in ranges)
+                {
+                    if (start > r.source_end) continue;
+                    if (start >= r.source && start <= r.source_end)
+                    {
+                        long p = r.map(start);
+                        if (p < lowest) lowest = p;
+                        if (end <= r.source_end)
+                            // fully contained so that's it.
+                            start = r.source_end;
+                        else
+                            start = r.source_end + 1;
+                        break;
+                    }
+                }
+            }
+        }
+        return lowest;
     }
 }
 
