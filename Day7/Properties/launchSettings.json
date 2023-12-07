@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Day7": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Users\\Andrew Douglas\\source\\repos\\AdventOfCode2023\\Day7\\input.txt\""
+    }
+  }
+}
