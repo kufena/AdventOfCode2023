@@ -6,8 +6,8 @@ Console.WriteLine("Hello, World!");
 
 var lines = File.ReadAllLines(args[0]);
 
-Part1(lines);
-//Part2(lines);
+//Part1(lines);
+Part2(lines);
 
 static void Part1(string[] lines)
 {
@@ -54,6 +54,91 @@ static void Part1(string[] lines)
                 Console.WriteLine("");
             }
             Console.WriteLine($"{val} { val / 2}");
+            break;
+        }
+    }
+}
+
+static void Part2(string[] lines)
+{
+    bool[][] visited = new bool[lines.Length][];
+    (int, int)[][] changes = new (int, int)[lines.Length][];
+    int sx = 0;
+    int sy = 0;
+    int ylen = lines.Length;
+    int xlen = lines[0].Length;
+    for (int i = 0; i < ylen; i++)
+    {
+        visited[i] = new bool[lines[i].Length];
+        changes[i] = new (int, int)[lines[i].Length];
+        if (lines[i].Contains("S"))
+        {
+            sy = i;
+            sx = lines[i].IndexOf("S");
+        }
+    }
+    Console.WriteLine($"sx = {sx} sy = {sy}");
+
+    List<(int, int)> directions = new List<(int, int)>() { (1, 0), (0, 1), (0, -1), (-1, 0) };
+    foreach (var startdir in directions)
+    {
+        for (int i = 0; i < xlen; i++)
+        {
+            for (int j = 0; j < ylen; j++)
+            {
+                visited[j][i] = false;
+                changes[j][i] = (0, 0);
+            }
+        }
+        (int dx, int dy) = startdir;
+        HashSet<char> testers = new HashSet<char>() { '|', 'L', 'J' };
+        var val = CircuitFinderGeneral(sx, sy, xlen, ylen, visited, changes, lines, dx, dy);
+        if (val >= 0)
+        {
+            /*
+             * Help from this YouTube video: https://www.youtube.com/watch?v=edVSG8Y_qf8
+             * 
+             * The idea is that to know if a point is inside a polygon, you draw a line from a point
+             * you know IS NOT inside the shape, and draw a line to the point. If the line crosses the
+             * boundary of the shape an odd number of times, then the point is inside, but if it
+             * crosses an even number of times, then it is outside.
+             * 
+             * The trouble is that our grid may through up some spoilers which are lines that are simply
+             * touches rather than entering the polygon.  For example F---7 touches the polygon but does
+             * not enter it.  So, you make a decision and go either across each row or down each column,
+             * looking for crossings.  If you go row by row, then a cross is when you meet | L or J, and
+             * if you go down each column a cross is when you meet - F or 7.  I have the visited grid
+             * which indicates points which are pipes - only test for points which aren't pipes testing
+             * the number of crosses so far to determine if a point is inside or not.
+             * 
+             * This solution handily prints the I in the grid as it goes.
+             */
+            int count = 0;
+            for (int i = 0; i < ylen; i++)
+            {
+                int crossings = 0;
+                for (int j = 0; j < xlen; j++)
+                {
+                    //                    if (visited[i][j]) Console.Write(toString(changes[i][j])); // lines[i][j]);
+                    //                    else Console.Write("       "); // '.');
+                    bool inorout = false;
+                    if (visited[i][j] && testers.Contains(lines[i][j])) {
+                        crossings++;
+                    }
+                    else {
+                        if (!visited[i][j] && crossings % 2 == 1)
+                        {
+                            count++;
+                            inorout = true;
+                        }
+                    }
+                    if (visited[i][j]) Console.Write(lines[i][j]);
+                    else Console.Write(inorout ? 'I' : '.');
+                }
+                Console.WriteLine("");
+            }
+            Console.WriteLine($"{val} {val / 2}");
+            Console.WriteLine(count);
             break;
         }
     }
