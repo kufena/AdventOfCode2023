@@ -43,6 +43,8 @@ static void Part1(string[] lines)
     Console.WriteLine($"Took {steps} steps.");
 }
 
+// BRUTE FORCE.
+// This is a good way of doing it but might take as long as the universe to complete.
 static void Part2(string[] lines)
 {
     var instructions = lines[0];
@@ -169,6 +171,9 @@ static void Part2b(string[] lines)
     }
 
     // Process results.
+    // I think this works because the point where each start cycles happens to be a point
+    // which ends with a Z, but I can't be sure of that, or whether they cycle from the start;
+    // in fact I don't think they do.  Anyhoo, it's a star!
 
     var circuits = steppedEnds.ToArray();
     long last = circuits[0].Value.First();
