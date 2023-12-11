@@ -11,6 +11,7 @@ var lines = File.ReadAllLines(args[0]);
 Part2b(lines);
 //Part2c(lines);
 
+
 static void Part1(string[] lines)
 {
     var instructions = lines[0];
@@ -167,108 +168,43 @@ static void Part2b(string[] lines)
         steppedEnds.Add(start, allEnds);
     }
 
-    // Let's just look for some common ground shall we?
-    var allofthem = finalSteps.Values.ToArray();
-    if (allofthem == null) throw new Exception("nothing found!!!");
-    long max = allofthem.Max();
-    long maxfactor = 0;
-    for (int j = 1; j < (max / 2); j++)
-    {
-        bool test = true;
-        for (int i = 0; i < allofthem.Length; i++)
-        {
-            test = test && (allofthem[i] % j == 0);
-        }
-        if (test)
-        {
-            maxfactor = j;
-            Console.WriteLine($"Factor of {j}");
-        }
-    }
-
-    long greatest = 0;
-    string greatestp = "";
-    foreach (var pair in finalSteps)
-    {
-        if (pair.Value > greatest)
-        {
-            greatest = pair.Value;
-            greatestp = pair.Key;
-        }
-    }
-
-    foreach (var l in steppedEnds[greatestp])
-    {
-        Console.WriteLine($"{greatest} {greatestp} {l} => {l + (greatest * maxfactor)}");
-    }
-
     // Process results.
-    
-    bool first = true;
-    HashSet<long> myfinal = new HashSet<long>();
-    foreach (var start in startlist)
+
+    var circuits = steppedEnds.ToArray();
+    long last = circuits[0].Value.First();
+    for (int i = 1; i < circuits.Length; i++)
     {
-        Console.WriteLine("working on " + start);
-        HashSet<long> hl = new();
-        foreach (var l in steppedEnds[start])
-        {
-            if (first)
-                hl.Add(l);
-            else
-            {
-                if (myfinal.Contains(l)) hl.Add(l);
-            }
-        }
+        last = LCM(last, circuits[i].Value.First());
+    }
+    Console.WriteLine(last);
+}
 
-        long minival = 1000000000000000;
-        long maxival = 100000000000000000;
-        long step = finalSteps[start];
-        long init = (long) Math.Floor((double)(minival / step));
-        List<long> ps = new();
-        foreach (var qwe in steppedEnds[start])
-        {
-            ps.Add(qwe + (init * step));
-        }
-        Console.WriteLine(init);
-        long maxcompute = minival;
-        while(maxcompute < maxival) 
-        {
-            List<long> newps = new();
-            foreach (var l in ps)
-            {
-                long q = l + finalSteps[start];
+static long LCM(long a, long b)
+{
+    long partial = Math.Abs(a * b);
+    long gcd = GCD(a, b);
+    return (partial / gcd);
+}
 
-                if (q > minival)
-                {
-                    if (first)
-                        hl.Add(q);
-                    else
-                    {
-                        if (myfinal.Contains(q)) hl.Add(q);
-                    }
-                }
-                newps.Add(q);
-                maxcompute = q;
-            }
-            ps = newps;
-        }
-
-        if (first)
+/*
+ * function gcd(a, b)
+    while a ≠ b 
+        if a > b
+            a := a − b
+        else
+            b := b − a
+    return a
+*/
+static long GCD(long a, long b)
+{
+    while (a != b)
+    {
+        if (a > b)
         {
-            first = false;
-        }
-        myfinal = hl;
-        if (myfinal.Count == 0)
-        {
-            Console.WriteLine("No point as hashset is already empty.");
-            break;
+            a = a - b;
         }
         else
-        {
-            Console.WriteLine($"{myfinal.Count} ---- {myfinal.Max()}");
-        }
+            b = b - a;
     }
-
-    foreach (var l in myfinal) Console.WriteLine($"Possible = {l}");
-    
+    return a;
 }
