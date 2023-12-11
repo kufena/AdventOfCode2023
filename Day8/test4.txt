@@ -1,0 +1,9 @@
+﻿RL
+
+11A = (ZZZ, 11B)
+11B = (11C, EEE)
+11C = (11A, ZZZ)
+22A = (DDD, 11A)
+22B = (EEE, EEE)
+22C = (GGG, GGG)
+ZZZ = (ZZZ, ZZZ)
