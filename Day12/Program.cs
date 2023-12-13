@@ -165,6 +165,10 @@ static void Part2(string[] lines)
 
             /*************************************
              * Hard Work Starts Here.
+             * 
+             * This works by doing 1 and then 2 copies, and
+             * the result for R(n+2) is R(n+1)^2/R(n)
+             * 
              *************************************/
             //Console.WriteLine($"{required} hashes from {quescount} question marks and {hashcount} existing, so {required - hashcount} dist.");
             // n! / k!(n-k)!
